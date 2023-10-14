@@ -1,25 +1,33 @@
-import React from 'react'
-import Author from './Author'
-import { useSelector } from 'react-redux'
-import { selectAllPosts } from './postsSlice'
-import TimeAgo from '../TimeAgo'
-import Reaction from '../Reaction'
+import React, { useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectAllPosts, getPostsError, getPostsStatus, fetchPosts } from './postsSlice'
+import PostsExcert from './PostsExcert'
 
 const Posts = () => {
+  const dispatch = useDispatch()
   const posts = useSelector(selectAllPosts)
-  const renderedPosts = posts.map(post => (
-      <article key={post.id}>
-          <h3>{post.title}</h3>
-          <p>{post.content.substring(0,100)}</p>
-          <Author userId={post.userId}/>
-          <TimeAgo timestamp={post.date}/>
-          <Reaction post={post}/>
-      </article>
-  ))
+  const postsStatus = useSelector(getPostsStatus)
+  const postsError = useSelector(getPostsError)
+
+  useEffect(() => {
+    if (postsStatus === 'idle') {
+      dispatch(fetchPosts())
+    }
+  }, [postsStatus, dispatch])
+
+  let content;
+  if (postsStatus === 'loading') {
+    content = <p>Loading....</p>;
+  } else if (postsStatus === "succeeded") {
+    content = posts.map(post => <PostsExcert key={post.id} post={post} />)
+  } else if (postsStatus === 'failed') {
+    content = <p>{postsError}</p>
+  }
+
   return (
     <section>
       <h2>Posts</h2>
-      {renderedPosts}
+      {content}
     </section>
   )
 }
