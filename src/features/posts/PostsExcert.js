@@ -1,18 +1,20 @@
-import React from 'react'
-import Author from './Author'
-import TimeAgo from '../TimeAgo'
-import Reaction from '../Reaction'
+import Author from "./Author";
+import TimeAgo from "./TimeAgo";
+import Reaction from "../Reaction";
+import { Link } from 'react-router-dom';
 
-const PostsExcert = ({ post }) => {
+const PostsExcerpt = ({ post }) => {
     return (
-        <article key={post.id}>
-            <h3>{post.title}</h3>
-            <p>{post.body.substring(0, 100)}</p>
-            <Author userId={post.userId} />
-            <TimeAgo timestamp={post.date} />
+        <article>
+            <h2>{post.title}</h2>
+            <p className="excerpt">{post.body.substring(0, 75)}...</p>
+            <p className="postCredit">
+                <Link to={`post/${post.id}`}>View Post</Link>
+                <Author userId={post.userId} />
+                <TimeAgo timestamp={post.date} />
+            </p>
             <Reaction post={post} />
         </article>
     )
 }
-
-export default PostsExcert
+export default PostsExcerpt
